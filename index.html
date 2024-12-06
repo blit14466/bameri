@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>YASME Bot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f9;
+    }
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    textarea, button {
+      width: 100%;
+      margin: 10px 0;
+    }
+    textarea {
+      height: 100px;
+    }
+    #commandHistory {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      background: #fafafa;
+      overflow-y: auto;
+      max-height: 200px;
+    }
+    .command {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Existing Content -->
+  <div class="existing-content">
+    <h1>Welcome to My Website</h1>
+    <p>Some existing content here...</p>
+  </div>
+
+  <!-- YASME Bot Section -->
+  <div class="container">
+    <h1>YASME Bot</h1>
+    <textarea id="commandInput" placeholder="Enter your command..."></textarea>
+    <button onclick="sendCommand()">Submit</button>
+    <div id="response"></div>
+    <h2>Command History</h2>
+    <div id="commandHistory"></div>
+  </div>
+
+  <script>
+    const commandHistory = [];
+
+    async function sendCommand() {
+      const command = document.getElementById('commandInput').value;
+      const responseDiv = document.getElementById('response');
+      const historyDiv = document.getElementById('commandHistory');
+
+      if (!command.trim()) {
+        responseDiv.innerHTML = "Command cannot be empty!";
+        return;
+      }
+
+      responseDiv.innerHTML = "Processing...";
+      try {
+        const res = await fetch('/command', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer your_personal_auth_token' // Replace with AUTH_TOKEN
+          },
+          body: JSON.stringify({ command })
+        });
+        const data = await res.text();
+        responseDiv.innerHTML = data;
+
+        // Update command history
+        commandHistory.push(command);
+        historyDiv.innerHTML = commandHistory.map((cmd, idx) => `<div class="command">${idx + 1}. ${cmd}</div>`).join('');
+      } catch (error) {
+        responseDiv.innerHTML = "Error: " + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
